@@ -54,6 +54,7 @@ public class SortClasslist {
         Pattern p = Pattern.compile("^(.*)[ ]+id:[ ]+([0-9]+)$");
         while (scanner.hasNextLine()) {
             String line = scanner.nextLine();
+System.err.println("==> "+line);
             Matcher m = p.matcher(line);
             if (line.startsWith("#")) {
                 // Comments -- print them first without sorting. These appear only at the top
@@ -62,7 +63,10 @@ public class SortClasslist {
             } else if (line.startsWith("@")) {
                 // @lambda-form-invoker, @lambda-proxy, etc.
                 lambdas.add(line);
-            } else if (m.find()) {
+            } else {
+                classes.add(line);
+            }
+//if (m.find()) {
                 // We found a pattern like this:
                 //
                 //    <beginning of line>java/lang/Object id: 0<end of line>
@@ -70,10 +74,9 @@ public class SortClasslist {
                 // This is a class used by one of the three builtin class loaders
                 // (boot/platform/app). Since the default classlist does not support unregistered
                 // classes, the ID is unused. Let's omit the ID, as it may be non-deterministic.
-                String className = m.group(1); // matches the (.*) part of the pattern.
-                classes.add(className);
- System.err.println("Good line: " + line);
-            } else {
+            //    String className = m.group(1); // matches the (.*) part of the pattern.
+          //      classes.add(className);
+  //          } else {
                 // HelloClasslist should not load classes in custom class loaders, or else
                 // we might end up with output like this:
                 //
@@ -81,10 +84,10 @@ public class SortClasslist {
                 //
                 // Such classes won't be usable for common applications, so they should
                 // not be included in the JDK's default classlist.
-                System.err.println("Unexpected line: " + line);
-                System.err.println("The default classlist should not contain unregistered classes");
+      //          System.err.println("Unexpected line: " + line);
+        //        System.err.println("The default classlist should not contain unregistered classes");
                 //System.exit(1);
-            }
+    //        }
         }
 
         Collections.sort(classes);
